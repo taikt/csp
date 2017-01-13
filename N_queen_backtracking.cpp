@@ -1,12 +1,13 @@
 // 10.1.2017, Tai<taitrananhvn@gmail.com>
 
 // Implement N-Queen problem using backtracking algorithm
+// http://www.geeksforgeeks.org/backtracking-set-3-n-queen-problem/
 
 #include <cstdio>
 #include <cstring>
 using namespace std;
 
-#define N 4
+#define N 30
 // Kiem tra thoa man contraint khi dat hau tai
 // hang row, cot col
 // rang buoc duoc kiem tra voi cac con hau 

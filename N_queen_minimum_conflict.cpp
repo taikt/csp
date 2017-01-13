@@ -1,18 +1,6 @@
 // 12.1.2017, Tai<taitrananhvn@gmail.com>
 // N-Queen problem using minimum confict algorithm
 
-// pseudo code
-// function Min-confict(csp,max_steps) return a solution or failure
-// inputs: csp, a constraint satisfaction problem
-//		max_steps - the number of steps allowed before giving up
-// current= an intial complete assignment for csp
-// for i=1 to max_steps do
-//	 if current is a solution for csp then return current
-//	 var= a randomly chosen conflicted variable from csp.Variables
-//	 value= the value v for var that minimizes Conflicts(var,v,current,csp)
-//	 set var=value in current
-// return failure
-
 // q[i] la vi tri con hau tai hang i, tuc cot q[i]
 // (i,q[i]), i=1->n
 // Conflict duoc tinh nhu sau:
@@ -28,7 +16,7 @@
 // tren tai cheo duoi bat ky (i+N-q[i]=const) co l con hau,
 // thi tong xung dot tren duong cheo do la l*(l-1)/2
 
-// Thuat toan nhu sau
+// Thuat toan
 // 1. Khoi tao n con hau 
 // con hau hang 0 chon ngau nhien
 // con hau hang i chon thoa man tong conflict hien tai la nho nhat
