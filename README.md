@@ -1,9 +1,8 @@
 
-# csp
-CSP solvers in AI
+# CSP solvers in AI
 
-#pseudo code
-## 1.Backtracking algorithm
+pseudo code
+## 1. Backtracking algorithm
 ## 2. Minimum conflict algorithm
  function Min-confict(csp,max_steps) return a solution or failure
  
