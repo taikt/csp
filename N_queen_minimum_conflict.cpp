@@ -39,7 +39,7 @@
 #include <cstring>
 
 using namespace std;
-#define N 4
+#define N 20
 #define INF 10000
 
 int row[N];
@@ -99,7 +99,7 @@ int highestConflictRow() {
 	return conflictIndex[rand() % conflictIndex.size()];
 }
 
-void eraseCount() {
+void resetCount() {
 	memset(col,0,sizeof(col));
 	memset(lowerDiag,0,sizeof(lowerDiag));
 	memset(upperDiag,0,sizeof(upperDiag));
@@ -112,7 +112,7 @@ void init() {
 	row[0] = rand()%N;
 	int j = row[0];
 
-	eraseCount();
+	resetCount();
 
 	col[j]++;
 	upperDiag[0+j]++;
@@ -134,7 +134,7 @@ int calculateConflict() {
 	int confl = 0;
 	int j;
 
-	eraseCount();
+	resetCount();
 
 	// queen(i, row[i])
 	// increase number of queens on column j=row[i], upper and lower diagnogals
@@ -164,7 +164,7 @@ void minConfict() {
 	int cnt = 0;
 	while (preConflict != 0) {
 		count++;
-		//n = rand() % N; // TODO: find row with smallest confict among rows from 1->N
+		//n = rand() % N; // TODO: find row with highest confict among rows from 1->N
 		n = highestConflictRow();
 
 		row[n] = selectQueen(n);
