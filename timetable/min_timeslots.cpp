@@ -1,6 +1,5 @@
 // Exam tabling schedule problem using GA and hill climbing
 
-
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -238,6 +237,9 @@ int main(int argc, char* argv[])
 
   dataset_name = params.at(1);
 
+  printf("%s %s %s\n",dataset_name.c_str(),params[0].c_str(), params[1].c_str());
+
+#if 1
   total_exams = get_total_exams();
   printf("total number of exams: %d\n",total_exams);
 
@@ -290,7 +292,7 @@ int main(int argc, char* argv[])
   cout << "Time used: " << float( clock () - begin_time ) /  (CLOCKS_PER_SEC/1000) << "ms\n";
   cout << "Best solution: ";
   best.print();
-
+#endif
   return 0;
 }
 
