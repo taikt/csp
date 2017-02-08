@@ -32,6 +32,7 @@ string dataset_name; // Saves the dataset name to read the files
 // with a conflict between the exams i and j
 vector< vector<int> > conflicts;
 
+
 // Represents a timetable
 class Solution
 {
