@@ -41,6 +41,8 @@
 using namespace std;
 
 int countExam;
+vector< vector<int> > conflict;
+
 
 class solution {
 	public:
@@ -55,13 +57,16 @@ class solution {
 		solution() {
 			// gan ngau nhien timeslot cho n exam
 			for (int i=0; i<countExam; i++) {
+				int random;
 				while (1) {
-					int random = (int)(((float) countExam-1)*rand()/(RAND_MAX + 1.0));
+					random = (int)(((float) countExam-1)*rand()/(RAND_MAX + 1.0));
+					
 					time.push_back(random);
 					if (satisfyToNow(i)) break;
-					else time.pop_back(i);
+					else time.pop_back();
 
 				}
+
 				exams_in_timeslot[random]++;
 			}
 			// tinh fitness cho solution tren?
@@ -101,7 +106,7 @@ class solution {
 		// kiem tra gia tri timeslot duoc gan moi cho ky thi i co vi pham constraint
 		bool feasiableAssigment(int i) {
 			for (int j=0; j<countExam; j++)
-				if (i!=j && conflict[i][j] > 0 && time[i]==time[j])
+				if ((i!=j) && (conflict[i][j] > 0) && (time[i]==time[j]))
 					return false;
 			return true;
 		}
@@ -110,7 +115,7 @@ class solution {
 		// methods
 		bool satisfyToNow(int i) {
 			for (int j=0; j<i; j++) // kiem tra ky thi j
-				if (conflict[i][j] >0 && time[i] = time[j])
+				if ((conflict[i][j] >0) && (time[i] == time[j]))
 				return false;
 
 			return true;
@@ -129,7 +134,7 @@ class solution {
 					
 					int previous_timeslot = time[i]; // luu lai timeslot cu neu timeslot moi vi pham constraint
 					for (int j=0; j<MAX_RETRIES; j++) {
-						int random = (int)(( (float) total_exams-1 )*rand()/(RAND_MAX + 1.0));
+						int random = (int)(( (float) countExam-1 )*rand()/(RAND_MAX + 1.0));
 						assignExam(i,random);
 						if (feasiableAssigment(i)) { // gan moi timeslot cho ky thi i thoam man constraint						
 							break;
@@ -159,7 +164,7 @@ class solution {
 		void hillClim() {
 			for (int i=0; i<HC_REPEAT; i++) {
 				// chon ngau nhien 1 ky thi
-				int exam = (int)(( (float) total_exams-1 )*rand()/(RAND_MAX + 1.0));
+				int exam = (int)(( (float) countExam-1 )*rand()/(RAND_MAX + 1.0));
 				
 				//int previous_timeslot = time[exam];
 				//int currentFitness = fitness;
@@ -246,7 +251,7 @@ int countCourse() {
 	return line;
 }
 
-vector< vector<int> > conflict;
+
 
 void conflictMatrix() {
 
@@ -330,17 +335,17 @@ void readinput() {
 }
 
 bool compare(solution a, solution b) {
-	return (a.fitness <= b.fitness)
+	return (a.fitness <= b.fitness);
 }
 
 solution bestSolution() {
 	//duyet best tu dau dan so hien tai va tim ra solution co fitness tot nhat
-	solution *best = population.begin();
+	solution *best = &(*population.begin());
 	vector<solution>::iterator it;
 
 	for (it=population.begin(); it != population.end(); it++) {
 		if (best->fitness < (*it).fitness)
-			best = it;
+			best = &(*it);
 	}
 
 	return (*best);
@@ -349,7 +354,7 @@ solution bestSolution() {
 
 void GA() {
 	// Tao dan so
-	generateGeneration();
+	//generateGeneration();
 
 	for (int i=0; i<MAX_GENERATION; i++) {
 		// chon lua best solution tu dan so hien tai, solution nay chac chan duoc add vao dan so tiep theo ma khong can mutation
@@ -371,7 +376,7 @@ void GA() {
 
 			sort(selectedPopulation.begin(),selectedPopulation.end(),compare);
 
-			newpopulation.push_back(selectedPopulation.front());
+			newPopulation.push_back(selectedPopulation.front());
 		}
 
 
