@@ -30,6 +30,13 @@
 #include <map>
 
 #define MAX_GENERATION 30
+#define PROB_HC 0.75
+#define PROB_MUTATION 0.05 
+#define TOURNAMENT_SIZE 3
+#define POPSIZE 20
+#define HC_REPEAT 100
+#define MAX_RETRIES 30
+
 
 using namespace std;
 
@@ -65,6 +72,7 @@ class solution {
 			calculate_fitness();
 		}
 
+		// tinh so used timeslot trong solution
 		void calculate_timeslot() {
 			used_time.clear();
 			map<int,int>::iterator it;
@@ -75,9 +83,29 @@ class solution {
 
 		}
 
+		// Tinh gia tri fitness cho solution
 		void calculate_fitness() {
 			fitness = used_time.size();
 		}
+
+		// gan ky thi i cho timeslot t
+		void assignExam(int i, int t) {
+			//update thong tin exams_in_timeslot 
+			// used timeslot va fitness se luon update dua vua exams_in_timeslot, vi the chi can
+			// update exams_in_timeslot
+			exams_in_timeslot[time[i]]--; // remove gia tri timeslot cu
+			time[i]= t;
+			exams_in_timeslot[time[i]]++; // update gia tri moi
+		}
+
+		// kiem tra gia tri timeslot duoc gan moi cho ky thi i co vi pham constraint
+		bool feasiableAssigment(int i) {
+			for (int j=0; j<countExam; j++)
+				if (i!=j && conflict[i][j] > 0 && time[i]==time[j])
+					return false;
+			return true;
+		}
+
 
 		// methods
 		bool satisfyToNow(int i) {
@@ -87,6 +115,98 @@ class solution {
 
 			return true;
 
+		}
+
+		// mutation cho dan so moi
+		// dua vao xac suat mutate tung solution, bang viec thay doi timeslot cho cac ky thi dua tren xac suat
+		// timeslot moi phai thoa man khong vi pham constraint
+		// voi moi exam, thu 3 lan de kiem tra timeslot moi
+		void mutate() {
+			for (int i=0; i< countExam; i++) 
+				if (((1.0)*rand()/(RAND_MAX + 1.0)) < PROB_MUTATION) {
+					// chon 1 timeslot ngau nhien gan cho ky thi i, thu toi da 3 lan
+					// dk gan la thoa man rang buoc
+					
+					int previous_timeslot = time[i]; // luu lai timeslot cu neu timeslot moi vi pham constraint
+					for (int j=0; j<MAX_RETRIES; j++) {
+						int random = (int)(( (float) total_exams-1 )*rand()/(RAND_MAX + 1.0));
+						assignExam(i,random);
+						if (feasiableAssigment(i)) { // gan moi timeslot cho ky thi i thoam man constraint						
+							break;
+						} else assignExam(i,previous_timeslot);
+					} 
+
+
+				}
+
+			// update used timeslot
+			calculate_timeslot();
+			// update new fitness
+			calculate_fitness();	 
+		}
+
+
+		// Hillclimbing cho dan so moi
+		// dua vao xac suat HC, hillclimbing cho tung solution
+		// voi moi solution duoc chon HC
+		// lap k lan, moi lan chon ngau nhien mot ky thi
+		// gan lai timeslot cho ky thi duoc chon voi gtri trong tap used timeslot
+		// dk thay doi timeslot moi la khong vi pham constraint va tao ra fitness tot hon
+
+		// note: voi mutation, chon timeslot ngau nhien
+		// voi hillclim chon timeslot tot nhat trong tap used_time da co
+
+		void hillClim() {
+			for (int i=0; i<HC_REPEAT; i++) {
+				// chon ngau nhien 1 ky thi
+				int exam = (int)(( (float) total_exams-1 )*rand()/(RAND_MAX + 1.0));
+				
+				//int previous_timeslot = time[exam];
+				//int currentFitness = fitness;
+				for (vector<int>::iterator it=used_time.begin(); it != used_time.end(); it++) {
+					// gan exam cho timeslot moi *it
+#if 0					
+					// cach 1
+					assignExam(exam, *it);
+					calculate_timeslot();
+					calculate_fitness();
+					if (!feasiableAssigment(exam) || currentFitness < fitness) {
+						//backup timeslot cu
+						assignExam(exam, previous_timeslot);
+						calculate_timeslot(); // update again used timeslot
+						calculate_fitness(); // update again fitness value
+					}
+#endif
+
+					// cach 2
+					// copy current solution toi 1 solution khac
+					// thay doi timeslot cho exam i tren solution moi
+					// neu thay doi tot hon ve fitness, swap lai cho solution cu
+					solution candi = *this;
+					candi.assignExam(exam, *it);
+					candi.calculate_timeslot();
+					candi.calculate_fitness();
+
+					if (candi.feasiableAssigment(exam) && candi.fitness < fitness) {
+						assignExam(exam,*it);
+						used_time = candi.used_time;
+						fitness = candi.fitness;
+						break; // voi ky thi exam duoc chon, neu tim duoc 1 timeslot tot hon thi break ngay, 
+						// TODO: test voi truong hop tim timeslot tot nhat trong tap used timeslot
+					}
+
+				}
+			}
+		}
+
+		// print 1 solution
+		void Printf() {	
+			printf("print the solution\n");
+			// print cac timeslot cho exam
+			for (int i=0; i< countExam; i++)
+				printf("time[%d]=%d  ",i,time[i]);
+			
+			printf("\n fitness value:%d", fitness);  
 		}
 
 };
@@ -209,35 +329,85 @@ void readinput() {
 	conflictMatrix();
 }
 
+bool compare(solution a, solution b) {
+	return (a.fitness <= b.fitness)
+}
+
+solution bestSolution() {
+	//duyet best tu dau dan so hien tai va tim ra solution co fitness tot nhat
+	solution *best = population.begin();
+	vector<solution>::iterator it;
+
+	for (it=population.begin(); it != population.end(); it++) {
+		if (best->fitness < (*it).fitness)
+			best = it;
+	}
+
+	return (*best);
+
+}
+
 void GA() {
 	// Tao dan so
 	generateGeneration();
 
 	for (int i=0; i<MAX_GENERATION; i++) {
 		// chon lua best solution tu dan so hien tai, solution nay chac chan duoc add vao dan so tiep theo ma khong can mutation
-		best = bestSolution();
+		solution best = bestSolution();
 		// tao dan so moi tu dan so hien tai, tao ra (popsize-1) individuals moi		
 		// moi individua moi duoc chon nhu sau
 		// lay ngau nhien 1 tap gom 3 individuals tu dan so hien tai
 		// chon ra individual(solution) tot nhat trong 3 individual tren lam individual moi cho the he tiep theo
+		vector<solution> newPopulation;
+		vector<solution> selectedPopulation;
+
+		for (int j=0; j<POPSIZE; j++) {
+			//chon mot solution moi
+			selectedPopulation.clear();
+			
+			for (int k=0; k<TOURNAMENT_SIZE; k++) {
+				selectedPopulation.push_back(population[(int) POPSIZE* rand()/(RAND_MAX + 1.0)]);   
+			}
+
+			sort(selectedPopulation.begin(),selectedPopulation.end(),compare);
+
+			newpopulation.push_back(selectedPopulation.front());
+		}
 
 
-		// mutation cho dan so moi
-		// dua vao xac suat mutate tung solution, bang viec thay doi timeslot cho cac ky thi dua tren xac suat
-		// timeslot moi phai thoa man khong vi pham constraint
-		// voi moi exam, thu 3 lan de kiem tra timeslot moi
+		vector<solution> newPopu;
+		
+		for (int i=0; i<POPSIZE-1; i++) {
+			// mutation cho dan so moi
+			// dua vao xac suat mutate tung solution, bang viec thay doi timeslot cho cac ky thi dua tren xac suat
+			// timeslot moi phai thoa man khong vi pham constraint
+			// voi moi exam, thu 3 lan de kiem tra timeslot moi
+			if (((1.0)*rand()/(RAND_MAX + 1.0)) < PROB_MUTATION) {
+				population[i].mutate();
+			}
 
+			// hillclimbing cho dan so moi
+			// dua vao xac suat HC, hillclimbing cho tung solution
+			// voi moi solution duoc chon HC
+			// lap k lan, moi lan chon ngau nhien mot ky thi
+			// gan lai timeslot cho ky thi duoc chon voi gtri trong tap used timeslot
+			// dk thay doi timeslot moi la khong vi pham constraint va tao ra fitness tot hon
+			if ((1.0 *rand()/(RAND_MAX + 1.0)) < PROB_HC) {
+				population[i].hillClim();
+			}
 
-		// hillclimbing cho dan so moi
-		// dua vao xac suat HC, hillclimbing cho tung solution
-		// voi moi solution duoc chon HC
-		// lap k lan, moi lan chon ngau nhien mot ky thi
-		// gan lai timeslot cho ky thi duoc chon voi gtri trong tap used timeslot
-		// dk thay doi timeslot moi la khong vi pham constraint va tao ra fitness tot hon
+			newPopu.push_back(population[i]);
+		}
 
+				
+		newPopu.push_back(best);
 		// them best solution tu dan so cu vao dan so moi   
 
 	}
+
+	// print best solution
+	solution best = bestSolution();
+	best.Printf();
 
 }
 int main() {
