@@ -29,11 +29,11 @@
 #include <cstdio>
 #include <map>
 
-#define MAX_GENERATION 30
+#define MAX_GENERATION 100
 #define PROB_HC 0.75
 #define PROB_MUTATION 0.05 
 #define TOURNAMENT_SIZE 3
-#define POPSIZE 20
+#define POPSIZE 50
 #define HC_REPEAT 100
 #define MAX_RETRIES 30
 
@@ -43,6 +43,8 @@ using namespace std;
 int countExam;
 vector< vector<int> > conflict;
 
+string fp1 = "input/test1.crs";
+string fp2 = "input/test1.stu";
 
 class solution {
 	public:
@@ -58,11 +60,16 @@ class solution {
 			// gan ngau nhien timeslot cho n exam
 			for (int i=0; i<countExam; i++) {
 				int random;
+
 				while (1) {
 					random = (int)(((float) countExam-1)*rand()/(RAND_MAX + 1.0));
 					
 					time.push_back(random);
-					if (satisfyToNow(i)) break;
+					if (satisfyToNow(i)) 
+					{
+						//printf("exam=%d,time=%d\n",i,random);
+						break;
+					}
 					else time.pop_back();
 
 				}
@@ -193,6 +200,7 @@ class solution {
 					candi.calculate_fitness();
 
 					if (candi.feasiableAssigment(exam) && candi.fitness < fitness) {
+						printf("candi.fitness = %d\n",candi.fitness);
 						assignExam(exam,*it);
 						used_time = candi.used_time;
 						fitness = candi.fitness;
@@ -211,7 +219,7 @@ class solution {
 			for (int i=0; i< countExam; i++)
 				printf("time[%d]=%d  ",i,time[i]);
 			
-			printf("\n fitness value:%d", fitness);  
+			printf("\nfitness value:%d\n", fitness);  
 		}
 
 };
@@ -239,7 +247,7 @@ int countCourse() {
 
 	// C style
 	int line = 0;
-	FILE *fp = fopen("input/course.txt","r");
+	FILE *fp = fopen(fp1.c_str(),"r");
 	int ch = 0;
 	while (!feof(fp)) {
 		ch = fgetc(fp);
@@ -287,7 +295,7 @@ void conflictMatrix() {
 
 
 	// C style
-	FILE *fp = fopen("input/student.txt","r");
+	FILE *fp = fopen(fp2.c_str(),"r");
 	char line[1024];
 
 	while (fgets(line,sizeof line, fp)!= NULL) {
@@ -320,15 +328,24 @@ void conflictMatrix() {
 		printf("\n");
 	}
 
+	//debug
+	for (int i=0; i< countExam; i++)
+	{
+		for (int j=i+1; j< countExam; j++) {
+			printf("(%d,%d)=%d  ",i,j,conflict[i][j]);
+		}
+		printf("\n");
+	}
+
 }
 
 void readinput() {
-	string filename1 = "input/course.txt";
-	string filename2 = "input/student.txt";
+	
 
 	// dem so course tu file course.txt
 	// doc file va dem so ky tu xuong dong '\n'
 	countExam = countCourse();
+	printf("so luong course %d\n",countExam);
 
 	// tinh ma tran conflict tu file student.txt
 	conflictMatrix();
@@ -352,10 +369,21 @@ solution bestSolution() {
 
 }
 
+void generateGeneration() {
+	
+	population.resize(POPSIZE);
+	vector<solution>::iterator it;
+
+	for (it=population.begin(); it!= population.end();it++)
+		*it = solution();
+}
+
 void GA() {
 	// Tao dan so
-	//generateGeneration();
+	printf("start GA\n");
 
+	generateGeneration();
+	
 	for (int i=0; i<MAX_GENERATION; i++) {
 		// chon lua best solution tu dan so hien tai, solution nay chac chan duoc add vao dan so tiep theo ma khong can mutation
 		solution best = bestSolution();
@@ -366,12 +394,15 @@ void GA() {
 		vector<solution> newPopulation;
 		vector<solution> selectedPopulation;
 
+		printf("generation %d, best fitness=%d\n",i,best.fitness);
+
 		for (int j=0; j<POPSIZE; j++) {
 			//chon mot solution moi
 			selectedPopulation.clear();
 			
 			for (int k=0; k<TOURNAMENT_SIZE; k++) {
-				selectedPopulation.push_back(population[(int) POPSIZE* rand()/(RAND_MAX + 1.0)]);   
+				//selectedPopulation.push_back(population[(int) POPSIZE* rand()/(RAND_MAX + 1.0)]);   
+				selectedPopulation.push_back(population.at((int)(((float) POPSIZE - 1)*rand()/(RAND_MAX + 1.0))));
 			}
 
 			sort(selectedPopulation.begin(),selectedPopulation.end(),compare);
@@ -379,6 +410,7 @@ void GA() {
 			newPopulation.push_back(selectedPopulation.front());
 		}
 
+		population = newPopulation;
 
 		vector<solution> newPopu;
 		
@@ -388,6 +420,7 @@ void GA() {
 			// timeslot moi phai thoa man khong vi pham constraint
 			// voi moi exam, thu 3 lan de kiem tra timeslot moi
 			if (((1.0)*rand()/(RAND_MAX + 1.0)) < PROB_MUTATION) {
+				//printf("mutate\n");
 				population[i].mutate();
 			}
 
@@ -404,10 +437,10 @@ void GA() {
 			newPopu.push_back(population[i]);
 		}
 
-				
+		// them best solution tu dan so cu vao dan so moi  		
 		newPopu.push_back(best);
-		// them best solution tu dan so cu vao dan so moi   
-
+ 
+		population = newPopu;
 	}
 
 	// print best solution
