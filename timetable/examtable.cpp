@@ -1,6 +1,6 @@
 // Mot population gom nhieu solution
 // 1 solution gom lich cac ky thi 1..n
-// dieu kien rang buoc 
+// dieu kien rang buoc
 // conflict[i,j] = so luong thi sinh tham gia ky thi i va j
 // time[i] luu slot time to chuc cho ky thi i
 // voi 2 ky thi i,j: neu conflict[i,j] != 0 => time[i] != time[j]
@@ -10,7 +10,7 @@
 // 001 2
 // 002 3
 
-// student.txt 
+// student.txt
 // 001 002 (sinh vien A)
 // 002 (sinh vien B)
 // 001 002 (sinh vien C)
@@ -28,10 +28,11 @@
 #include <cstdlib> //file in C
 #include <cstdio>
 #include <map>
+#include <time.h>
 
 #define MAX_GENERATION 100
 #define PROB_HC 0.75
-#define PROB_MUTATION 0.05 
+#define PROB_MUTATION 0.05
 #define TOURNAMENT_SIZE 3
 #define POPSIZE 50
 #define HC_REPEAT 100
@@ -43,10 +44,11 @@ using namespace std;
 int countExam;
 vector< vector<int> > conflict;
 
-string fp1 = "input/test1.crs";
-string fp2 = "input/test1.stu";
+string fp1 = "test2.crs";
+string fp2 = "test2.stu";
 
 class solution {
+
 	public:
 		// variable
 		vector<int> time; // gan timeslot cho moi ky thi
@@ -63,9 +65,9 @@ class solution {
 
 				while (1) {
 					random = (int)(((float) countExam-1)*rand()/(RAND_MAX + 1.0));
-					
+
 					time.push_back(random);
-					if (satisfyToNow(i)) 
+					if (satisfyToNow(i))
 					{
 						//printf("exam=%d,time=%d\n",i,random);
 						break;
@@ -88,7 +90,7 @@ class solution {
 		void calculate_timeslot() {
 			used_time.clear();
 			map<int,int>::iterator it;
-			for (it=exams_in_timeslot.begin(); it != exams_in_timeslot.end(); it++) 
+			for (it=exams_in_timeslot.begin(); it != exams_in_timeslot.end(); it++)
 				if (it->second > 0) { // neu so luong exam tren 1 slottime >0, chon slottime ay
 					used_time.push_back(it->first);
 				}
@@ -102,7 +104,7 @@ class solution {
 
 		// gan ky thi i cho timeslot t
 		void assignExam(int i, int t) {
-			//update thong tin exams_in_timeslot 
+			//update thong tin exams_in_timeslot
 			// used timeslot va fitness se luon update dua vua exams_in_timeslot, vi the chi can
 			// update exams_in_timeslot
 			exams_in_timeslot[time[i]]--; // remove gia tri timeslot cu
@@ -134,19 +136,19 @@ class solution {
 		// timeslot moi phai thoa man khong vi pham constraint
 		// voi moi exam, thu 3 lan de kiem tra timeslot moi
 		void mutate() {
-			for (int i=0; i< countExam; i++) 
+			for (int i=0; i< countExam; i++)
 				if (((1.0)*rand()/(RAND_MAX + 1.0)) < PROB_MUTATION) {
 					// chon 1 timeslot ngau nhien gan cho ky thi i, thu toi da 3 lan
 					// dk gan la thoa man rang buoc
-					
+
 					int previous_timeslot = time[i]; // luu lai timeslot cu neu timeslot moi vi pham constraint
 					for (int j=0; j<MAX_RETRIES; j++) {
 						int random = (int)(( (float) countExam-1 )*rand()/(RAND_MAX + 1.0));
 						assignExam(i,random);
-						if (feasiableAssigment(i)) { // gan moi timeslot cho ky thi i thoam man constraint						
+						if (feasiableAssigment(i)) { // gan moi timeslot cho ky thi i thoam man constraint
 							break;
 						} else assignExam(i,previous_timeslot);
-					} 
+					}
 
 
 				}
@@ -154,7 +156,7 @@ class solution {
 			// update used timeslot
 			calculate_timeslot();
 			// update new fitness
-			calculate_fitness();	 
+			calculate_fitness();
 		}
 
 
@@ -172,12 +174,12 @@ class solution {
 			for (int i=0; i<HC_REPEAT; i++) {
 				// chon ngau nhien 1 ky thi
 				int exam = (int)(( (float) countExam-1 )*rand()/(RAND_MAX + 1.0));
-				
+
 				//int previous_timeslot = time[exam];
 				//int currentFitness = fitness;
 				for (vector<int>::iterator it=used_time.begin(); it != used_time.end(); it++) {
 					// gan exam cho timeslot moi *it
-#if 0					
+#if 0
 					// cach 1
 					assignExam(exam, *it);
 					calculate_timeslot();
@@ -204,7 +206,7 @@ class solution {
 						assignExam(exam,*it);
 						used_time = candi.used_time;
 						fitness = candi.fitness;
-						break; // voi ky thi exam duoc chon, neu tim duoc 1 timeslot tot hon thi break ngay, 
+						break; // voi ky thi exam duoc chon, neu tim duoc 1 timeslot tot hon thi break ngay,
 						// TODO: test voi truong hop tim timeslot tot nhat trong tap used timeslot
 					}
 
@@ -213,13 +215,13 @@ class solution {
 		}
 
 		// print 1 solution
-		void Printf() {	
+		void Printf() {
 			printf("print the solution\n");
 			// print cac timeslot cho exam
 			for (int i=0; i< countExam; i++)
 				printf("time[%d]=%d  ",i,time[i]);
-			
-			printf("\nfitness value:%d\n", fitness);  
+
+			printf("\nfitness value:%d\n", fitness);
 		}
 
 };
@@ -229,25 +231,27 @@ vector<solution> population;
 
 int countCourse() {
 
-	int cnt;
+	//int cnt;
 
 	// C++ style using STL count
-#if 0	
+#if 0
 	ifstream fp("input/course.txt");
 
 	fp.unsetf(ios_base::skipws); //don't skip newline '\n'
 
 	istream_iterator<char> itt(fp);
 	istream_iterator<char> end;
-	
+
 	cnt = count(itt,end,'\n');
 	fp.close();
 	printf("%d\n",cnt);
 #endif
 
 	// C style
+	printf("test\n");
 	int line = 0;
 	FILE *fp = fopen(fp1.c_str(),"r");
+	printf("test2\n");
 	int ch = 0;
 	while (!feof(fp)) {
 		ch = fgetc(fp);
@@ -267,12 +271,12 @@ void conflictMatrix() {
 	for (int i=0; i< countExam; i++)
 		conflict[i].resize(countExam);
 
-#if 0	
+#if 0
 	// C++ style
 	ifstream fp("input/student.txt");
 	string line;
 	printf("%d\n",countExam);
-	
+
 
 	while (getline(fp,line)) {
 		stringstream st(line);
@@ -281,7 +285,7 @@ void conflictMatrix() {
 
 		vector<string> vt(itt,end);
 
-		for (vector<string>::iterator it = vt.begin(); it != vt.end(); it++) 
+		for (vector<string>::iterator it = vt.begin(); it != vt.end(); it++)
 			for (vector<string>::iterator nit = it+1; nit != vt.end(); nit++)
 				{
 					printf(" %s",(*it).c_str());
@@ -301,10 +305,10 @@ void conflictMatrix() {
 	while (fgets(line,sizeof line, fp)!= NULL) {
 		char *start = line;
 		//printf("%s\n",line);
-		
+
 		int vl, n;
 		vector<int> vt; // Khong can khoi tao neu thuc hien push_back()?
-		
+
 		while (sscanf(start,"%d%n",&vl,&n) == 1) {
 			// printf("%d<%d> ",vl,n);
 			// %n: so ky tu duoc doc toi hien tai
@@ -314,17 +318,17 @@ void conflictMatrix() {
 			start += n;
 		}
 
-		for (vector<int>::iterator it = vt.begin(); it != vt.end(); it++) { 
+		for (vector<int>::iterator it = vt.begin(); it != vt.end(); it++) {
 			for (vector<int>::iterator nit = it+1; nit != vt.end(); nit++) {
 				printf("(%d,%d) ",*it, *nit);
-			
+
 				conflict[(*it)-1][(*nit)-1]++;
 				conflict[(*nit)-1][(*it)-1]++;
 			}
 			printf("\n");
 		}
-		
-		
+
+
 		printf("\n");
 	}
 
@@ -340,7 +344,7 @@ void conflictMatrix() {
 }
 
 void readinput() {
-	
+
 
 	// dem so course tu file course.txt
 	// doc file va dem so ky tu xuong dong '\n'
@@ -361,7 +365,7 @@ solution bestSolution() {
 	vector<solution>::iterator it;
 
 	for (it=population.begin(); it != population.end(); it++) {
-		if (best->fitness < (*it).fitness)
+		if (best->fitness > (*it).fitness)
 			best = &(*it);
 	}
 
@@ -370,7 +374,7 @@ solution bestSolution() {
 }
 
 void generateGeneration() {
-	
+
 	population.resize(POPSIZE);
 	vector<solution>::iterator it;
 
@@ -383,11 +387,11 @@ void GA() {
 	printf("start GA\n");
 
 	generateGeneration();
-	
+
 	for (int i=0; i<MAX_GENERATION; i++) {
 		// chon lua best solution tu dan so hien tai, solution nay chac chan duoc add vao dan so tiep theo ma khong can mutation
 		solution best = bestSolution();
-		// tao dan so moi tu dan so hien tai, tao ra (popsize-1) individuals moi		
+		// tao dan so moi tu dan so hien tai, tao ra (popsize-1) individuals moi
 		// moi individua moi duoc chon nhu sau
 		// lay ngau nhien 1 tap gom 3 individuals tu dan so hien tai
 		// chon ra individual(solution) tot nhat trong 3 individual tren lam individual moi cho the he tiep theo
@@ -399,9 +403,9 @@ void GA() {
 		for (int j=0; j<POPSIZE; j++) {
 			//chon mot solution moi
 			selectedPopulation.clear();
-			
+
 			for (int k=0; k<TOURNAMENT_SIZE; k++) {
-				//selectedPopulation.push_back(population[(int) POPSIZE* rand()/(RAND_MAX + 1.0)]);   
+				//selectedPopulation.push_back(population[(int) POPSIZE* rand()/(RAND_MAX + 1.0)]);
 				selectedPopulation.push_back(population.at((int)(((float) POPSIZE - 1)*rand()/(RAND_MAX + 1.0))));
 			}
 
@@ -413,7 +417,7 @@ void GA() {
 		population = newPopulation;
 
 		vector<solution> newPopu;
-		
+
 		for (int i=0; i<POPSIZE-1; i++) {
 			// mutation cho dan so moi
 			// dua vao xac suat mutate tung solution, bang viec thay doi timeslot cho cac ky thi dua tren xac suat
@@ -437,9 +441,9 @@ void GA() {
 			newPopu.push_back(population[i]);
 		}
 
-		// them best solution tu dan so cu vao dan so moi  		
+		// them best solution tu dan so cu vao dan so moi
 		newPopu.push_back(best);
- 
+
 		population = newPopu;
 	}
 
@@ -449,12 +453,13 @@ void GA() {
 
 }
 int main() {
+    printf("why?\n");
 	srand(time(NULL));
-	
+
 	readinput();
 
 	GA();
-	
-	
+
+
 	return 0;
 }

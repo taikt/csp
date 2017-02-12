@@ -7,10 +7,10 @@
 #include <cstring>
 using namespace std;
 
-#define N 20
+#define N 30
 // Kiem tra thoa man contraint khi dat hau tai
 // hang row, cot col
-// rang buoc duoc kiem tra voi cac con hau 
+// rang buoc duoc kiem tra voi cac con hau
 // da duoc dat tu cot 1->col-1
 // 3 rang buoc
 // 	1. tu cot 0 toi col-1, khong co con hau nau tren
@@ -20,11 +20,11 @@ using namespace std;
 
 bool satisfyContraint(int arr[N][N], int row, int col) {
 	// dieu kien 1
-	for (int i = 0; i<col; i++) 
+	for (int i = 0; i<col; i++)
 		if (arr[row][i]) return false;
 
 	// dieu kien 2
-	for (int i=row, j=col; i>=0 && j>=0; i--,j--) 
+	for (int i=row, j=col; i>=0 && j>=0; i--,j--)
 		if (arr[i][j]) return false;
 
 	// dieu kien 3
@@ -34,15 +34,15 @@ bool satisfyContraint(int arr[N][N], int row, int col) {
 	return true;
 }
 
-// Dat con hau tai cot thu col, gia su cac con hau 
+// Dat con hau tai cot thu col, gia su cac con hau
 // da duoc dat hoan thanh tu cot 1->col-1
 bool solveNQueen(int arr[N][N], int col) {
-	// duyet tu hang 1 toi hang N, de kiem tra vi tri 
+	// duyet tu hang 1 toi hang N, de kiem tra vi tri
 	// dat hau. Tai hang i, kiem tra xem vi tri hau
-	// co vi pham contraints voi cac hau da dat 
+	// co vi pham contraints voi cac hau da dat
 	// trong cac cot 1->col-1
 	// Neu khong vi pham:
-	// 1. dat hau tai vtri i cot col va de 
+	// 1. dat hau tai vtri i cot col va de
 	//    qui tim vi tri dat hau tai cot tiep col+1
 	// 2. quay lui. khoi phuc trang thai tai i ve trang
 	//	  thai khoi tao, kiem tra hang hang tiep theo i+1
@@ -62,7 +62,7 @@ bool solveNQueen(int arr[N][N], int col) {
 }
 
 int main() {
-	
+
 	//freopen("input.txt","r",stdin);
 	//scanf("%d",&N); //board with N queen
 
