@@ -1,9 +1,8 @@
-// 12.1.2017, Tai<taitrananhvn@gmail.com>
 // N-Queen problem using minimum confict algorithm
 
 // Ky hieu
 // row[i] la vi tri con hau tai hang i, tuc cot q[i]
-// can tim vi tri cac con hau(i,row[i]), i=1->n 
+// can tim vi tri cac con hau(i,row[i]), i=1->n
 
 // Conflict duoc tinh nhu sau:
 
@@ -12,7 +11,7 @@
 // => neu co n con hau khac tren hang i => anh huong conflict
 // doi voi i la n
 // Tong quat, gia su hang i co tat ca n con hau
-// khi do tong xung dot tren hang i la n*(n-1)/2 
+// khi do tong xung dot tren hang i la n*(n-1)/2
 // (chia 2 vi neu i xung dot j thi j cung xung dot i)
 // Tuong tu, tai 1 duong cheo tren bat ky (i+row[i]=const) co k quan hau
 // thi tong xung dot tren do la k*(k-1)/2
@@ -20,12 +19,12 @@
 // thi tong xung dot tren duong cheo do la l*(l-1)/2
 
 // Thuat toan
-// 1. Khoi tao n con hau 
+// 1. Khoi tao n con hau
 // con hau hang 0 chon ngau nhien
 // con hau hang i chon thoa man conflict nho nhat
 // 2. Tai moi buoc lap (Lap den khi nao conflict tong = 0 hoac vuot qua gioi han cho phep)
 // chon hang k co tong conflict tren no lon nhat trong so n hang
-// Tren hang nay, chon vi tri moi cua con hau de dat duoc min-confict trong tat ca lua chon 
+// Tren hang nay, chon vi tri moi cua con hau de dat duoc min-confict trong tat ca lua chon
 // (muc dich la tim duoc 1 assigment de minimize conflict)
 // Tinh lai confict tong
 // (neu qua 2 buoc lap ma tong conflict khong doi, thi doi ngau nhien 1 vi tri hau
@@ -63,7 +62,7 @@ int selectQueen(int row) {
 			minConflict = tempConflict;
 			conflictIndex.clear();
 			conflictIndex.push_back(j);
-			
+
 		} else if (tempConflict == minConflict) {
 			conflictIndex.push_back(j);
 		}
@@ -90,7 +89,7 @@ int highestConflictRow() {
 			minConflict = tempConflict;
 			conflictIndex.clear();
 			conflictIndex.push_back(i);
-			
+
 		} else if (tempConflict == minConflict) {
 			conflictIndex.push_back(i);
 		}
@@ -119,7 +118,7 @@ void init() {
 	lowerDiag[0+N-1-j]++;
 
 	//find Queen at row[i]
-	for (int i=1; i<N; i++) {		
+	for (int i=1; i<N; i++) {
 		j= row[i] = selectQueen(i);
 
 		col[j]++;
@@ -138,7 +137,7 @@ int calculateConflict() {
 
 	// queen(i, row[i])
 	// increase number of queens on column j=row[i], upper and lower diagnogals
-	for (int i = 0; i<N; i++) { 
+	for (int i = 0; i<N; i++) {
 		j = row[i];
 		col[j]++;
 		upperDiag[i+j]++;
@@ -147,7 +146,7 @@ int calculateConflict() {
 
 	for (int i=0; i < 2*N-1; i++) {
 		if (i < N) {
-			confl += col[i]*(col[i]-1)/2; 
+			confl += col[i]*(col[i]-1)/2;
 		}
 		confl += upperDiag[i]*(upperDiag[i]-1)/2;
 		confl += lowerDiag[i]*(lowerDiag[i]-1)/2;
@@ -197,7 +196,7 @@ int main() {
 	printAssigment();
 	printf("Initial conflict value=%d\n\n",calculateConflict());
 
-	
+
 
 	minConfict();
 	printf("Final assigment\n");

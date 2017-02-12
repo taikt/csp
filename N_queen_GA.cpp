@@ -1,7 +1,4 @@
-// 12.1.2017, Tai<taitrananhvn@gmail.com>
 // N-Queen problem using Genetic algorithm
-
-
 #include <cstdio>
 #include <limits>
 #include <cstdlib> //rand,srand
@@ -54,7 +51,7 @@ public:
 
 		// queen(i, row[i])
 		// increase number of queens on column j=row[i], upper and lower diagnogals
-		for (int i = 0; i<N; i++) { 
+		for (int i = 0; i<N; i++) {
 			j = row[i];
 			col[j]++;
 			upperDiag[i+j]++;
@@ -63,7 +60,7 @@ public:
 
 		for (int i=0; i < 2*N-1; i++) {
 			if (i < N) {
-				confl += col[i]*(col[i]-1)/2; 
+				confl += col[i]*(col[i]-1)/2;
 			}
 			confl += upperDiag[i]*(upperDiag[i]-1)/2;
 			confl += lowerDiag[i]*(lowerDiag[i]-1)/2;
@@ -120,7 +117,7 @@ int partition(int left, int right) {
 	return index;
 }
 
-// use quicksort 
+// use quicksort
 void sortPopulation(int left, int right) {
 	int index;
 	if (left < right) {
@@ -132,8 +129,8 @@ void sortPopulation(int left, int right) {
 
 void init() {
 	population = new board[popSize];
-	
-	//TODO: trouble if just init population without specifying rand() for each population 
+
+	//TODO: trouble if just init population without specifying rand() for each population
 	// as below. In first case, all population has same queen position
 
 	for (int i=0; i< popSize; i++) {
@@ -178,7 +175,7 @@ void geneticAlgorithm (board* population) {
 			child = reproduce(p1,p2);
 			child.mutate();
 
-			population[i] = child;			
+			population[i] = child;
 		}
 		*/
 		int cut = min(popSize - 1, max((int)floor(popSize*SurvivalRate), 1));
@@ -193,8 +190,8 @@ void geneticAlgorithm (board* population) {
 		}
 		*/
 		for (int i=cut, j=0; i<popSize; i+=numberOfKids, j++)
-		{	
-			for (int k=0; k<numberOfKids; k++) {				
+		{
+			for (int k=0; k<numberOfKids; k++) {
 				population[i+k] = reproduce(j,(j+k)%cut);
 			}
 		}
@@ -214,7 +211,7 @@ void geneticAlgorithm (board* population) {
 
 
 int main() {
-	
+
 	init();
 	geneticAlgorithm(population);
 

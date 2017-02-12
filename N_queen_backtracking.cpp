@@ -1,8 +1,5 @@
-// 10.1.2017, Tai<taitrananhvn@gmail.com>
-
 // Implement N-Queen problem using backtracking algorithm
 // http://www.geeksforgeeks.org/backtracking-set-3-n-queen-problem/
-
 #include <cstdio>
 #include <cstring>
 using namespace std;

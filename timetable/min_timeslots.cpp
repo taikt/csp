@@ -1,5 +1,4 @@
 // Exam tabling schedule problem using GA and hill climbing
-
 #include <iostream>
 #include <fstream>
 #include <algorithm>
