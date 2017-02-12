@@ -44,8 +44,8 @@ using namespace std;
 int countExam;
 vector< vector<int> > conflict;
 
-string fp1 = "test2.crs";
-string fp2 = "test2.stu";
+string fp1 = "input/test1.crs";
+string fp2 = "input/test1.stu";
 
 class solution {
 
