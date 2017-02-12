@@ -44,8 +44,8 @@ using namespace std;
 int countExam;
 vector< vector<int> > conflict;
 
-string fp1 = "input/test1.crs";
-string fp2 = "input/test1.stu";
+//string fp1 = "input/test1.crs";
+string file = "input/test1.stu";
 
 class solution {
 
@@ -248,6 +248,7 @@ int countCourse() {
 #endif
 
 	// C style
+#if 0
 	printf("test\n");
 	int line = 0;
 	FILE *fp = fopen(fp1.c_str(),"r");
@@ -261,22 +262,16 @@ int countCourse() {
 	fclose(fp);
 
 	return line;
+#endif //
 }
 
 
 
 void conflictMatrix() {
-
-	conflict.resize(countExam);
-	for (int i=0; i< countExam; i++)
-		conflict[i].resize(countExam);
-
-#if 0
+   #if 0
 	// C++ style
 	ifstream fp("input/student.txt");
 	string line;
-	printf("%d\n",countExam);
-
 
 	while (getline(fp,line)) {
 		stringstream st(line);
@@ -297,15 +292,21 @@ void conflictMatrix() {
 	}
 #endif
 
-
 	// C style
-	FILE *fp = fopen(fp2.c_str(),"r");
+	FILE *fp = fopen(file.c_str(),"r");
 	char line[1024];
+
+    fgets(line,sizeof line, fp);
+    countExam = atoi(line);
+
+    conflict.resize(countExam);
+	for (int i=0; i< countExam; i++)
+		conflict[i].resize(countExam);
+
+    printf("So luong exam: %d \n",countExam);
 
 	while (fgets(line,sizeof line, fp)!= NULL) {
 		char *start = line;
-		//printf("%s\n",line);
-
 		int vl, n;
 		vector<int> vt; // Khong can khoi tao neu thuc hien push_back()?
 
@@ -318,6 +319,7 @@ void conflictMatrix() {
 			start += n;
 		}
 
+
 		for (vector<int>::iterator it = vt.begin(); it != vt.end(); it++) {
 			for (vector<int>::iterator nit = it+1; nit != vt.end(); nit++) {
 				printf("(%d,%d) ",*it, *nit);
@@ -327,7 +329,6 @@ void conflictMatrix() {
 			}
 			printf("\n");
 		}
-
 
 		printf("\n");
 	}
@@ -348,8 +349,8 @@ void readinput() {
 
 	// dem so course tu file course.txt
 	// doc file va dem so ky tu xuong dong '\n'
-	countExam = countCourse();
-	printf("so luong course %d\n",countExam);
+	//countExam = countCourse();
+	//printf("so luong course %d\n",countExam);
 
 	// tinh ma tran conflict tu file student.txt
 	conflictMatrix();
@@ -453,7 +454,6 @@ void GA() {
 
 }
 int main() {
-    printf("why?\n");
 	srand(time(NULL));
 
 	readinput();
