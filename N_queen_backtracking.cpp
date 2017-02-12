@@ -7,7 +7,7 @@
 #include <cstring>
 using namespace std;
 
-#define N 30
+#define N 20
 // Kiem tra thoa man contraint khi dat hau tai
 // hang row, cot col
 // rang buoc duoc kiem tra voi cac con hau
