@@ -15,7 +15,6 @@
 // 002 (sinh vien B)
 // 001 002 (sinh vien C)
 
-
 #include <cstdio>
 #include <algorithm>
 #include <fstream> // ifstream
@@ -383,7 +382,7 @@ void generateGeneration() {
 		*it = solution();
 }
 
-void GA() {
+void HybExamTabling() {
 	// Tao dan so
 	printf("start GA\n");
 
@@ -458,7 +457,7 @@ int main() {
 
 	readinput();
 
-	GA();
+	HybExamTabling();
 
 
 	return 0;
