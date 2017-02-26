@@ -430,7 +430,7 @@ void TaoDanSo() {
 		*it = CaThe();
 }
 
-void HybExamTabling() {
+void XepLichThi() {
     const clock_t thoigianBatdau = clock();
     printf("\nStart running thuat toan HET\n\n");
 	// Tao dan so
@@ -508,7 +508,7 @@ int main() {
 
 	DocDauVao();
 
-	HybExamTabling();
+	XepLichThi();
 
 
 	return 0;
