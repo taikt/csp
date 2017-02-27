@@ -1,4 +1,4 @@
-// Thuat toan HET_LD, chi su dung leo doi, khong su dung dot bien
+// Thuat toan HET, ket hop di truyen va leo doi
 
 // Mot DanSo gom nhieu CaThe
 // 1 CaThe gom lich cac ky thi 1..n
@@ -35,7 +35,7 @@
 #define XacSuatLeoDoi 0.75
 #define XacSuatDotBien 0.05
 #define KichThuocTapChonLoc 3
-#define SoCaTheDanSo 50
+#define SoCaTheDanSo 11
 #define SoBuocLapLeoDoi 100
 #define SoLanKiemTra 30
 //#define DocDuLieuTu2File
@@ -45,9 +45,10 @@ using namespace std;
 int SoKyThi;
 vector< vector<int> > XungDot;
 
-string fp1 = "input/car-f-92.crs";
-string fp2 = "input/car-f-92.stu";
-string file = "input/input1.txt";
+string fp1 = "car-f-92.crs";
+string fp2 = "car-f-92.stu";
+string file = "input1.txt";
+FILE *output_file;
 
 class CaThe {
 
@@ -218,11 +219,15 @@ class CaThe {
 
 		// print 1 CaThe
 		void Printf() {
+			fprintf(output_file,"\n In ra slot thoi gian cho ca the tot nhat:\n");
 			printf("\n In ra slot thoi gian cho ca the tot nhat:\n");
 			// print cac timeslot cho exam
-			for (int i=0; i< SoKyThi; i++)
+			for (int i=0; i< SoKyThi; i++) {
+				fprintf(output_file,"time[%d]=%d  ",i+1,time[i]);
 				printf("time[%d]=%d  ",i+1,time[i]);
+			}
 
+			fprintf(output_file,"\nGia tri fitness:%d\n", fitness);
 			printf("\nGia tri fitness:%d\n", fitness);
 		}
 
@@ -345,6 +350,7 @@ void MaTranXungDot() {
 	for (int i=0; i< SoKyThi; i++)
 		XungDot[i].resize(SoKyThi);
 
+    fprintf(output_file,"So luong ky thi: %d \n",SoKyThi);
     printf("So luong ky thi: %d \n",SoKyThi);
 
 	while (fgets(line,sizeof line, fp)!= NULL) {
@@ -432,7 +438,8 @@ void TaoDanSo() {
 
 void XepLichThi() {
     const clock_t thoigianBatdau = clock();
-    printf("\nStart running thuat toan HET_LD\n\n");
+    fprintf(output_file,"\nStart running thuat toan XLT_LD\n\n");
+    printf("\nStart running thuat toan XLT_LD\n\n");
 	// Tao dan so
 	TaoDanSo();
 
@@ -447,7 +454,10 @@ void XepLichThi() {
 		vector<CaThe> newDanSo;
 		vector<CaThe> DanSoDuocChon;
 
+		fprintf(output_file,"The he %d, gia tri fitness tot nhat=%d\n",i,best.fitness);
 		printf("The he %d, gia tri fitness tot nhat=%d\n",i,best.fitness);
+
+		fprintf(output_file,"Thoi gian da chay: %.3f sec\n",(float (clock()-thoigianBatdau)/(CLOCKS_PER_SEC)));
 		printf("Thoi gian da chay: %.3f sec\n",(float (clock()-thoigianBatdau)/(CLOCKS_PER_SEC)));
 
 		for (int j=0; j<SoCaTheDanSo; j++) {
@@ -501,12 +511,21 @@ void XepLichThi() {
 	// print best CaThe
 	CaThe best = bestCaThe();
 	best.Printf();
+	fprintf(output_file,"Thoi gian da chay: %.3f sec\n",(float (clock()-thoigianBatdau)/(CLOCKS_PER_SEC)));
 	printf("Thoi gian da chay: %.3f sec\n",(float (clock()-thoigianBatdau)/(CLOCKS_PER_SEC)));
 
+	fclose(output_file);
+
 }
+
 int main() {
 	srand(time(NULL));
-
+    output_file = fopen("output.txt","w");
+    if (output_file == NULL) {
+        printf("Loi mo file!\n");
+        exit(1);
+    }
+    printf("start XLT_LD\n");
 	DocDauVao();
 
 	XepLichThi();
