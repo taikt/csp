@@ -1,4 +1,5 @@
 // N-Queen problem using Genetic algorithm
+
 #include <cstdio>
 #include <limits>
 #include <cstdlib> //rand,srand
